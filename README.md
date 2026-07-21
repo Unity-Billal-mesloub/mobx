@@ -7,7 +7,7 @@ _Simple, scalable state management._
 [![npm version](https://badge.fury.io/js/mobx.svg)](https://badge.fury.io/js/mobx)
 [![OpenCollective](https://opencollective.com/mobx/backers/badge.svg)](docs/backers-sponsors.md#backers)
 [![OpenCollective](https://opencollective.com/mobx/sponsors/badge.svg)](docs/backers-sponsors.md#sponsors)
-[![Discuss on Github](https://img.shields.io/badge/discuss%20on-GitHub-orange)](https://github.com/mobxjs/mobx/discussions)
+[![Discuss on Github](https://img.shields.io/badge/discuss%20on-GitHub-orange)](https://github.com/Unity-Billal-mesloub/mobx/discussions)
 [![Coverage Status](https://coveralls.io/repos/github/mobxjs/mobx/badge.svg?branch=main)](https://coveralls.io/github/mobxjs/mobx?branch=main)
 [![View changelog](https://img.shields.io/badge/changelogs.xyz-Explore%20Changelog-brightgreen)](https://changelogs.xyz/mobx)
 
@@ -21,7 +21,7 @@ Documentation can be found at **[mobx.js.org](https://mobx.js.org/)**.
 
 ## Sponsors
 
-MobX is made possible by the generosity of the sponsors below, and many other [individual backers](https://github.com/mobxjs/mobx/blob/main/docs/backers-sponsors.md#backers). Sponsoring directly impacts the longevity of this project.
+MobX is made possible by the generosity of the sponsors below, and many other [individual backers](https://github.com/Unity-Billal-mesloub/mobx/blob/main/docs/backers-sponsors.md#backers). Sponsoring directly impacts the longevity of this project.
 
 **🥇🥇 Platinum sponsors (\$5000+ total contribution): 🥇🥇**
 
@@ -157,13 +157,12 @@ The philosophy and benefits of the mental model provided by MobX are also descri
 -   The [MobX cheat sheet](https://gum.co/fSocU) (£5) is both useful and sponsors the project
 -   [10 minute interactive introduction to MobX and React](https://mobx.js.org/getting-started)
 -   [Egghead.io course, based on MobX 3](https://egghead.io/courses/manage-complex-state-in-react-apps-with-mobx)
--   The [MobX awesome list](https://github.com/mobxjs/awesome-mobx#awesome-mobx) – a long list of MobX resources and example projects
 
 ### The MobX book
 
 <a href="https://www.packtpub.com/product/mobx-quick-start-guide/9781789344837"><img src="https://mobx.js.org/assets/book.jpg" height="120px" /></a>
 
-The **[MobX Quick Start Guide](https://www.packtpub.com/product/mobx-quick-start-guide/9781789344837)** ($24.99) by [Pavan Podila](https://twitter.com/pavanpodila) and [Michel Weststrate](https://twitter.com/mweststrate) is available as an [ebook](https://www.packtpub.com/product/mobx-quick-start-guide/9781789344837), [paperback](https://www.amazon.com/MobX-Quick-Start-Guide-Supercharge/dp/1789344832), and on the [O'Reilly platform](https://www.oreilly.com/library/view/mobx-quick-start/9781789344837/) (see [preview](https://books.google.com/books?id=ALFmDwAAQBAJ&printsec=frontcover#v=onepage&q&f=false)).
+The **[MobX Quick Start Guide](https://www.packtpub.com/product/mobx-quick-start-guide/9781789344837)** ($24.99) by [Pavan Podila](https://www.packtpub.com/product/mobx-quick-start-guide/9781789344837), [paperback](https://www.amazon.com/MobX-Quick-Start-Guide-Supercharge/dp/1789344832), and on the [O'Reilly platform](https://www.oreilly.com/library/view/mobx-quick-start/9781789344837/) (see [preview](https://books.google.com/books?id=ALFmDwAAQBAJ&printsec=frontcover#v=onepage&q&f=false)).
 
 ### Videos
 
@@ -179,4 +178,4 @@ The **[MobX Quick Start Guide](https://www.packtpub.com/product/mobx-quick-start
 
 MobX is inspired by reactive programming principles, which are for example used in spreadsheets. It is inspired by model–view–viewmodel frameworks like [MeteorJS's Tracker](https://docs.meteor.com/api/tracker.html), [Knockout](https://knockoutjs.com/) and [Vue.js](https://vuejs.org/), but MobX brings _transparent functional reactive programming_ (TFRP, a concept which is further explained in the [MobX book](https://www.packtpub.com/product/mobx-quick-start-guide/9781789344837)) to the next level and provides a standalone implementation. It implements TFRP in a glitch-free, synchronous, predictable and efficient manner.
 
-A ton of credit goes to [Mendix](https://github.com/mendix), for providing the flexibility and support to maintain MobX and the chance to prove the philosophy of MobX in a real, complex, performance critical applications.
+A ton of credit goes to [Mendix](https://github.com/Unity-Billal-mesloub), for providing the flexibility and support to maintain MobX and the chance to prove the philosophy of MobX in a real, complex, performance critical applications.
