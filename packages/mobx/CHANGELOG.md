@@ -1,5 +1,107 @@
 # mobx
 
+## 7.0.3
+
+### Patch Changes
+
+-   [`6f002b8e543ca39d3ee23681e28848d7f1724fae`](https://github.com/mobxjs/mobx/commit/6f002b8e543ca39d3ee23681e28848d7f1724fae) [#4696](https://github.com/mobxjs/mobx/pull/4696) Thanks [@gesposito](https://github.com/gesposito)! - perf: add a `node` export condition that routes Node and Bun to the existing `dist/index.js` entry, which picks the prebaked development or production CJS build once at require time. `import`ing mobx in Node no longer executes the env-agnostic `dist/mobx.mjs` with per-call `NODE_ENV` checks, and mixing `import` and `require` in one Node app now yields a single mobx instance.
+
+## 7.0.2
+
+### Patch Changes
+
+-   [`ec1b708026c1578e1c1f6c7bd90be18b26f7ce85`](https://github.com/mobxjs/mobx/commit/ec1b708026c1578e1c1f6c7bd90be18b26f7ce85) [#4695](https://github.com/mobxjs/mobx/pull/4695) Thanks [@gesposito](https://github.com/gesposito)! - perf: evaluate `NODE_ENV` once at module scope in the env-agnostic esm bundles (`dist/<pkg>.esm.js` and `dist/<pkg>.mjs`) instead of at every `__DEV__` call site. `process.env` is an exotic object in Node, so each check performed a real environment lookup on hot paths; consumers that execute these files as-is (Node ESM, vitest, SSR) see roughly 10x faster observable writes in dev mode. All env-set artifacts and bundler output are unchanged.
+
+-   [`6d8b5fa6c7596d7e5b16e55e3121d81c0c5bb21a`](https://github.com/mobxjs/mobx/commit/6d8b5fa6c7596d7e5b16e55e3121d81c0c5bb21a) [#4672](https://github.com/mobxjs/mobx/pull/4672) Thanks [@chatman-media](https://github.com/chatman-media)! - Fix `ObservableSet.replace` emitting spurious `delete`/`add` events (and triggering reactions) for values that are unchanged. It now only fires `delete` for removed values and `add` for newly added ones, mirroring `ObservableMap.replace`.
+
+    Note: because `replace` no longer clears and re-adds every value, the iteration order after `replace` changes in a (subtle but observable) way. Surviving values now keep their original relative position and newly added values are appended, instead of the whole set being reordered to match the argument. For example, `set(["a", "b", "c"]).replace(["d", "b", "a"])` previously iterated as `d, b, a`, and now iterates as `a, b, d`. This is arguably the more correct behavior (unchanged values are genuinely unchanged), but if you relied on `replace` reordering the set to match its argument, you may need to adjust.
+
+## 7.0.1
+
+### Patch Changes
+
+-   [`9444c624b957b489875e1c6b45deb290034ce4e9`](https://github.com/mobxjs/mobx/commit/9444c624b957b489875e1c6b45deb290034ce4e9) [#4694](https://github.com/mobxjs/mobx/pull/4694) Thanks [@mrpmohiburrahman](https://github.com/mrpmohiburrahman)! - fix: `onBecomeObserved` is now called for the dependencies of a computed that becomes observed while serving a cached value. Previously, observation only cascaded when the newly observed computed also happened to recompute, so an observable with a live observer chain up to a running reaction could still report itself as unobserved and never fire its hook.
+
+-   [`53bb83fdf455a4e606bb721ea10040ded7c57796`](https://github.com/mobxjs/mobx/commit/53bb83fdf455a4e606bb721ea10040ded7c57796) [#4683](https://github.com/mobxjs/mobx/pull/4683) Thanks [@gesposito](https://github.com/gesposito)! - perf: fast-path primitives in `deepEnhancer`. Writing a primitive into a deep observable no longer runs the observable/array/plain-object/Map/Set/function type checks; primitives can never be made observable, so they are returned immediately. Creating an observable array of primitives is ~4x faster, and observable Set/Map writes are ~20-25% faster in the perf suite.
+
+-   [`030498d6b2bfe4cc27340fed8c706177cb3b28e1`](https://github.com/mobxjs/mobx/commit/030498d6b2bfe4cc27340fed8c706177cb3b28e1) [#4684](https://github.com/mobxjs/mobx/pull/4684) Thanks [@a-y-ibrahim](https://github.com/a-y-ibrahim)! - Fix a stack overflow ("Maximum call stack size exceeded") that could occur when an `onBecomeUnobserved` handler disposes a `Reaction`. Disposing a `Reaction` re-enters `endBatch()`, which used to recurse into the same `pendingUnobservations` drain loop instead of letting the already-running outer loop pick up the newly queued items, causing unbounded stack depth for long enough chains.
+
+-   [`a9086076b9ead1a9c933215bffaa9b57d44f6829`](https://github.com/mobxjs/mobx/commit/a9086076b9ead1a9c933215bffaa9b57d44f6829) [#4681](https://github.com/mobxjs/mobx/pull/4681) Thanks [@spokodev](https://github.com/spokodev)! - Fix ObservableSet union, intersection and symmetricDifference to return results in receiver order, matching native Set, when the argument is a plain Set.
+
+-   [`c65a4e14cf48b42cb792dc4c64edbcf56234b32d`](https://github.com/mobxjs/mobx/commit/c65a4e14cf48b42cb792dc4c64edbcf56234b32d) [#4682](https://github.com/mobxjs/mobx/pull/4682) Thanks [@gesposito](https://github.com/gesposito)! - perf: lazily allocate the internal `observers_` Set. Atoms and computed values no longer allocate an empty `Set` upfront; it is created on first observer instead. Most atoms in large stores are never observed, so this saves roughly 160 bytes per unobserved atom (e.g. ~35% lower heap usage when hydrating 50k instances with 10 observable fields each).
+
+## 7.0.0
+
+### Major Changes
+
+-   [`1926c69f53168619d688f348aa587e8f3ae579ae`](https://github.com/mobxjs/mobx/commit/1926c69f53168619d688f348aa587e8f3ae579ae) [#4671](https://github.com/mobxjs/mobx/pull/4671) Thanks [@kubk](https://github.com/kubk)! - Release MobX 7, mobx-react-lite 5, and mobx-react 10.
+
+    Bundle sizes are down: ESM prod 17.02 KiB gzip -> 13.96 KiB gzip; a minimal tree-shaken example is 10.32 KiB gzip now.
+
+    It removes long-deprecated compatibility paths and keeps the React bindings split between `mobx-react-lite` for function components and `mobx-react` for class-component support.
+
+    ## MobX 7
+
+    MobX 7 is a cleanup release focused on the modern runtime and decorator model.
+
+    -   MobX now always uses Proxy-backed observable objects and arrays. The ES5/non-proxy fallback has been removed.
+    -   `configure({ useProxies: ... })` is no longer supported.
+    -   `{ proxy: false }` options for `observable`, `observable.object`, and `observable.array` are no longer supported.
+    -   Legacy decorators are no longer supported.
+    -   Namespaced annotation and comparer properties now use named exports to reduce bundle size:
+
+    | Removed API           | Replacement         |
+    | --------------------- | ------------------- |
+    | `observable.ref`      | `observableRef`     |
+    | `observable.shallow`  | `observableShallow` |
+    | `observable.deep`     | `observableDeep`    |
+    | `observable.struct`   | `observableStruct`  |
+    | `computed.struct`     | `computedStruct`    |
+    | `action.bound`        | `actionBound`       |
+    | `flow.bound`          | `flowBound`         |
+    | `comparer.identity`   | `compareIdentity`   |
+    | `comparer.default`    | `compareDefault`    |
+    | `comparer.structural` | `compareStructural` |
+    | `comparer.shallow`    | `compareShallow`    |
+
+    -   The public `trace` API and its related runtime support have been removed. Use `toJS`, `getDependencyTree`, `getObserverTree`, `spy` or `mobx-log` package for debugging.
+
+    ## mobx-react-lite 5 and mobx-react 10
+
+    mobx-react-lite 5 and mobx-react 10 require MobX 7 and React 18 or later.
+
+    `mobx-react-lite` remains the function-component package. `mobx-react` remains a thin wrapper around `mobx-react-lite` that adds class component and Stage 3 `@observer` class decorator support.
+
+    -   Keep function-component imports on `mobx-react-lite` if you do not need class component support.
+    -   Use `mobx-react` when you need class components or `@observer` class decorators.
+    -   `mobx-react-lite` supports function components and `forwardRef`; `mobx-react` delegates function components to `mobx-react-lite` and handles classes itself.
+    -   Remove React batching imports, including the stale React Native batching deep import. React 18+ renderers handle batching.
+
+    The recommended public React binding surface for both packages is:
+
+    -   `observer`
+    -   `Observer`
+    -   `useLocalObservable`
+    -   `enableStaticRendering`
+    -   `isUsingStaticRendering`
+
+    The following APIs have been removed from the React binding packages:
+
+    -   `Provider`, `inject`, and `MobXProviderContext`; use `React.createContext` directly.
+    -   `disposeOnUnmount`; dispose reactions in `componentWillUnmount` or return cleanup functions from `useEffect`.
+    -   `PropTypes`; use TypeScript or the regular `prop-types` package.
+    -   `useObserver`; wrap components with `observer` or use `<Observer>`.
+    -   `useLocalStore`; use `useLocalObservable`.
+    -   `useAsObservableSource`; synchronize values from props into local observable state explicitly.
+    -   `useStaticRendering`; use `enableStaticRendering`.
+    -   `observerBatching`, `isObserverBatched`, `batchingForReactDom`, `batchingOptOut`, and `batchingForReactNative`; remove these imports because React 18+ renderers handle batching.
+    -   Deprecated `observer(fn, { forwardRef: true })`; pass an already-created `React.forwardRef(...)` component to `observer` instead.
+    -   Legacy function-component `contextTypes` handling.
+
+### Patch Changes
+
+-   [`979d267d569734dc3cb969ed1880ed68bb79f1b5`](https://github.com/mobxjs/mobx/commit/979d267d569734dc3cb969ed1880ed68bb79f1b5) [#4677](https://github.com/mobxjs/mobx/pull/4677) Thanks [@kubk](https://github.com/kubk)! - Shorten minified error URL to reduce production bundle size.
+
 ## 6.16.1
 
 ### Patch Changes

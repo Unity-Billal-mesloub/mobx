@@ -248,9 +248,9 @@ test("deepEqual set", () => {
     x2.add(1)
     x2.add({ z: 2 })
 
-    expect(mobx.comparer.structural(x, x2)).toBe(false)
+    expect(mobx.compareStructural(x, x2)).toBe(false)
     x2.replace([1, { z: 1 }])
-    expect(mobx.comparer.structural(x, x2)).toBe(true)
+    expect(mobx.compareStructural(x, x2)).toBe(true)
 })
 
 test("set.clear should not be tracked", () => {
@@ -337,6 +337,17 @@ describe("The Set object methods do what they are supposed to do", () => {
         expect(isSubsetOfObservableResult).toBeFalsy()
         expect(isSupersetOfObservableResult).toBeFalsy()
         expect(isDisjointFromObservableResult).toBeTruthy()
+    })
+
+    test("set methods preserve receiver order (matches native Set)", () => {
+        const nativeCopy = new Set(reactiveSet)
+        const other = new Set([6, 2, 1])
+
+        expect([...reactiveSet.union(other)]).toEqual([...nativeCopy.union(other)])
+        expect([...reactiveSet.intersection(other)]).toEqual([...nativeCopy.intersection(other)])
+        expect([...reactiveSet.symmetricDifference(other)]).toEqual([
+            ...nativeCopy.symmetricDifference(other)
+        ])
     })
 
     test("with ObservableSet #3919", () => {
@@ -510,5 +521,111 @@ describe("Observable Set interceptors", () => {
         s.add(2)
 
         expect([...s]).toStrictEqual([1, 10])
+    })
+})
+
+describe("#3761 replace only fires events for actual changes", () => {
+    test("replace only emits delete/add for removed/added values", () => {
+        const s = set(["a", "b", "c"])
+        const events = []
+        mobx.observe(s, change => {
+            delete change.observableKind
+            delete change.debugObjectName
+            events.push(change)
+        })
+
+        // The replacement is intentionally ordered differently from the original
+        // ("c", "a", "d" vs "a", "b", "c"): "b" is removed, "d" is added, "a"/"c" survive.
+        s.replace(["c", "a", "d"])
+
+        expect(events).toEqual([
+            { object: s, oldValue: "b", type: "delete" },
+            { object: s, newValue: "d", type: "add" }
+        ])
+        // Surviving values keep their original relative order ("a" before "c") and the
+        // added value is appended, so the result iterates as ["a", "c", "d"]. See the
+        // iteration-order note in the changeset / #3761 discussion.
+        expect(mobx.values(s)).toEqual(["a", "c", "d"])
+    })
+
+    test("replace with identical content emits no events", () => {
+        const s = set(["x", "y"])
+        const events = []
+        mobx.observe(s, change => events.push(change))
+
+        s.replace(["x", "y"])
+
+        expect(events).toEqual([])
+        expect(mobx.values(s)).toEqual(["x", "y"])
+    })
+
+    test("replace with an ES6 Set only emits events for actual changes", () => {
+        const s = set([1, 2, 3])
+        const events = []
+        mobx.observe(s, change => {
+            delete change.observableKind
+            delete change.debugObjectName
+            events.push(change)
+        })
+
+        // Reordered replacement (3, 1, 4 vs 1, 2, 3): 2 is removed, 4 is added, 1/3 survive.
+        s.replace(new Set([3, 1, 4]))
+
+        expect(events).toEqual([
+            { object: s, oldValue: 2, type: "delete" },
+            { object: s, newValue: 4, type: "add" }
+        ])
+        // Survivors keep their original relative order (1 before 3), 4 is appended.
+        expect(mobx.values(s)).toEqual([1, 3, 4])
+    })
+
+    test("replace with an observable Set only emits events for actual changes", () => {
+        const s = set([1, 2, 3])
+        const other = set([2, 3, 4])
+        const events = []
+        mobx.observe(s, change => {
+            delete change.observableKind
+            delete change.debugObjectName
+            events.push(change)
+        })
+
+        s.replace(other)
+
+        expect(events).toEqual([
+            { object: s, oldValue: 1, type: "delete" },
+            { object: s, newValue: 4, type: "add" }
+        ])
+        expect(mobx.values(s)).toEqual([2, 3, 4])
+    })
+
+    test("replace with identical content does not report a change", () => {
+        const s = set([1, 2, 3])
+        let runCount = 0
+        const dispose = mobx.autorun(() => {
+            mobx.values(s)
+            runCount++
+        })
+        expect(runCount).toBe(1)
+
+        // Nothing actually changes, so observers must not be notified.
+        s.replace([1, 2, 3])
+
+        expect(runCount).toBe(1)
+        dispose()
+    })
+
+    test("replace still honors interceptors", () => {
+        const s = set([1, 2])
+        mobx.intercept(s, change => {
+            // Prevent adding 4.
+            if (change.type === "add" && change.newValue === 4) {
+                return undefined
+            }
+            return change
+        })
+
+        s.replace([2, 3, 4])
+
+        expect(mobx.values(s)).toEqual([2, 3])
     })
 })
