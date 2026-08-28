@@ -9,21 +9,14 @@
 
 ## Related projects
 
--   [mobx-connect](https://github.com/nightwolfz/mobx-connect) MobX @connect decorator for react components. Similar to redux's @connect.
--   [rfx-stack](https://github.com/foxhound87/rfx-stack) RFX Stack - Universal App featuring: React + Feathers + MobX
--   [mobx-reactor](https://github.com/amsb/mobx-reactor) Connect MobX data stores to functional stateless React components with async actions and unidirectional data flow.
--   [mobx-model](https://github.com/ikido/mobx-model) Simplify mobx data stores that mimic backend models
--   [rx-mobx](https://github.com/chicoxyzzy/rx-mobx) Convert MobX observables to RxJS and vice versa
+-   [mobx-reactor](https://github.com/Unity-Billal-mesloub/mobx-reactor) Connect MobX data stores to functional stateless React components with async actions and unidirectional data flow.
 
 ## More examples
 
-A nice list is WIP, but see this [github issue](https://github.com/mobxjs/mobx/issues/104) for a list of example projects, including routing, authorization, server side rendering etc.
+A nice list is WIP, but see this [github issue](https://github.com/Unity-Billal-mesloub/mobx/issues) for a list of example projects, including routing, authorization, server side rendering etc.
 
--   [TodoMVC using MobX and React](https://github.com/mweststrate/mobx-todomvc)
--   The [ports of the _Notes_ and _Kanban_ examples](https://github.com/survivejs/mobservable-demo) from the book "SurviveJS - Webpack and React" to mobservable.
 -   A simple webshop using [React + mobx](https://jsfiddle.net/mweststrate/46vL0phw) or [JQuery + mobx](http://jsfiddle.net/mweststrate/vxn7qgdw).
 -   [Simple timer](https://jsfiddle.net/mweststrate/wgbe4guu/) application in JSFiddle.
--   [Simple ES5 MobX examples](https://github.com/mattruby/mobx-examples) Bite sized MobX examples all setup to run in jsFiddle.
 
 ## Philosophy
 
