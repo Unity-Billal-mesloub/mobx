@@ -1,5 +1,5 @@
 {
-    "changelog": ["@changesets/changelog-github", { "repo": "mobxjs/mobx" }],
+    "changelog": ["@changesets/changelog-github", { "repo": "Unity-Billal-mesloub/mobx" }],
     "commit": false,
     "access": "public",
     "baseBranch": "main",
